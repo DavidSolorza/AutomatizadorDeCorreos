@@ -5,11 +5,11 @@ import path from 'path'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
-  // Dev siempre en / — evita mezclar base de GitHub Pages con localhost
+  // Producción: rutas relativas (./assets/...) — evita 404 en GitHub Pages
   const base =
     mode === 'development'
       ? env.VITE_BASE_PATH || '/'
-      : env.VITE_BASE_PATH || '/AutomatizadorDeCorreos/'
+      : env.VITE_BASE_PATH || './'
 
   return {
     base,

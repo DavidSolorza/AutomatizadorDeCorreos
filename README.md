@@ -81,7 +81,7 @@ Variables de build (ya en CI):
 
 - `VITE_STANDALONE=true` — API local en el navegador (sin backend)
 - `VITE_USE_MOCK=true`
-- `VITE_BASE_PATH=/AutomatizadorDeCorreos/`
+- `VITE_BASE_PATH=./` — assets relativos para GitHub Pages
 
 ### Vercel / Netlify (manual)
 

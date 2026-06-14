@@ -35,7 +35,7 @@ jobs:
         env:
           VITE_STANDALONE: 'true'
           VITE_USE_MOCK: 'true'
-          VITE_BASE_PATH: /AutomatizadorDeCorreos/
+          VITE_BASE_PATH: './'
           NODE_OPTIONS: '--max-old-space-size=4096'
         run: pnpm run build
 
@@ -45,7 +45,7 @@ jobs:
           test -f dist/index.html
           test -f dist/404.html
           test -f dist/.nojekyll
-          grep -q "AutomatizadorDeCorreos/assets" dist/index.html
+          grep -q "./assets/" dist/index.html
           echo "Build OK"
 
       - name: Publish to gh-pages branch

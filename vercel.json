@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "echo skip-root-install",
+  "framework": null,
+  "env": {
+    "VITE_USE_MOCK": "true",
+    "VITE_BASE_PATH": "/"
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

@@ -1,7 +1,10 @@
 import type { CaseCategory } from '@/types/cases';
 import type { DemoUser } from '@/types/cases';
 
-export const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false';
+
+/** Base URL de Vite (assets). Coincide con vite.config `base`. */
+export const BASE_PATH = import.meta.env.BASE_URL || '/';
 
 export const APP_NAME = 'AseEsta Ops';
 

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppRouter } from '@/app/AppRouter';
 import { useUIStore } from '@/store';
 import { USE_MOCK } from '@/config';
-import { initDemoEngine, runDemoWelcomeSync } from '@/services/mock/demo-engine';
+import { initDemoEngine, runDemoWelcomeSync } from '@/services/local-api';
 import './styles/globals.css';
 
 if (USE_MOCK) {

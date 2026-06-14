@@ -7,7 +7,7 @@ import {
   simulateRandomDemoEmails,
   processDemoFullSync,
   resetDemoEngine,
-} from '@/services/mock/demo-engine';
+} from '@/services/local-api';
 import { cn } from '@/lib/utils';
 
 export function DemoModeBanner() {
@@ -52,48 +52,47 @@ export function DemoModeBanner() {
   return (
     <div
       className={cn(
-        'sticky top-16 z-30 border-b border-violet-200/60 dark:border-violet-800/40',
-        'bg-gradient-to-r from-violet-50 via-indigo-50 to-blue-50',
-        'dark:from-violet-950/50 dark:via-indigo-950/40 dark:to-blue-950/30',
+        'sticky top-16 z-20 border-b border-violet-200/50 dark:border-violet-800/40',
+        'bg-violet-50/95 dark:bg-violet-950/40 backdrop-blur-sm',
       )}
     >
-      <div className="px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div className="flex items-start sm:items-center gap-2 min-w-0">
-          <Sparkles size={16} className="text-violet-600 shrink-0 mt-0.5 sm:mt-0" />
-          <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-snug">
-            <span className="font-semibold text-violet-700 dark:text-violet-300">Modo demo</span>
-            {' — '}
-            Correos, clasificación, asignación y casos se simulan en el navegador (sin backend).
-            En producción: <code className="text-[10px] sm:text-xs text-violet-600 dark:text-violet-400">VITE_USE_MOCK=false</code>
+      <div className="px-6 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="inline-flex items-center gap-1.5 rounded-md bg-violet-600 px-2 py-1 text-xs font-semibold text-white shrink-0">
+            <Sparkles size={12} />
+            Demo
+          </span>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            Versión de demostración con datos de ejemplo.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
           <Button
             variant="secondary"
             size="sm"
             loading={busy === 'simulate'}
             onClick={handleSimulate}
-            className="h-8 text-xs"
+            className="h-7 px-2.5 text-xs gap-1.5"
           >
-            <Mail size={13} /> Simular correos
+            <Mail size={12} /> Simular
           </Button>
           <Button
             variant="secondary"
             size="sm"
             loading={busy === 'sync'}
             onClick={handleSyncAll}
-            className="h-8 text-xs"
+            className="h-7 px-2.5 text-xs gap-1.5"
           >
-            <RefreshCw size={13} /> Sync buzones
+            <RefreshCw size={12} /> Sync
           </Button>
           <Button
             variant="ghost"
             size="sm"
             loading={busy === 'reset'}
             onClick={handleReset}
-            className="h-8 text-xs text-slate-500"
+            className="h-7 px-2.5 text-xs gap-1.5 text-slate-500"
           >
-            <RotateCcw size={13} /> Restaurar
+            <RotateCcw size={12} /> Restaurar
           </Button>
         </div>
       </div>

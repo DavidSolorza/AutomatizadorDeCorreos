@@ -40,6 +40,18 @@ function parseUrl(url: string): { path: string; params: Record<string, string> }
   return { path, params };
 }
 
+function issueMockTokens(userId: string) {
+  return {
+    access_token: `local-token-${userId}`,
+    refresh_token: `local-refresh-${userId}`,
+    token_type: 'bearer' as const,
+  };
+}
+
+function persistRules() {
+  persistDemoState();
+}
+
 export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<AxiosResponse> {
   const method = (config.method || 'get').toLowerCase();
   const url = config.url || '';
@@ -148,12 +160,14 @@ export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<A
   if (path === 'rules' && method === 'post') {
     const rule = { id: `rule-${Date.now()}`, user_id: 'admin', created_at: new Date().toISOString(), updated_at: new Date().toISOString(), ...body };
     casesMockStore.rules.push(rule);
+    persistRules();
     return Promise.resolve(mockResponse(config, rule));
   }
   if (path === 'rules/seed' && method === 'post') {
     if (casesMockStore.rules.length === 0) {
       casesMockStore.rules = JSON.parse(JSON.stringify(INSURANCE_RULES));
     }
+    persistRules();
     return Promise.resolve(mockResponse(config, casesMockStore.rules));
   }
   if (path.match(/^rules\/([^/]+)$/) && method === 'get') {
@@ -165,6 +179,7 @@ export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<A
     const idx = casesMockStore.rules.findIndex((r) => r.id === id);
     if (idx !== -1) {
       casesMockStore.rules[idx] = { ...casesMockStore.rules[idx], ...body, updated_at: new Date().toISOString() };
+      persistRules();
       return Promise.resolve(mockResponse(config, casesMockStore.rules[idx]));
     }
     return Promise.reject({ response: { status: 404 } });
@@ -172,6 +187,7 @@ export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<A
   if (path.match(/^rules\/([^/]+)$/) && method === 'delete') {
     const id = path.split('/')[1];
     casesMockStore.rules = casesMockStore.rules.filter((r) => r.id !== id);
+    persistRules();
     return Promise.resolve(mockResponse(config, { ok: true }));
   }
 
@@ -284,12 +300,42 @@ export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<A
     return Promise.resolve(mockResponse(config, { ok: true }));
   }
 
-  // Auth
+  // Auth — misma interfaz que FastAPI, ejecutada en el navegador
+  if (path === 'auth/register' && method === 'post') {
+    const user = {
+      ...DEFAULT_DEMO_USER,
+      id: `user-${Date.now()}`,
+      email: body.email,
+      full_name: body.full_name || body.email,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    return Promise.resolve(mockResponse(config, { user, ...issueMockTokens(user.id) }, 201));
+  }
+  if (path === 'auth/login' && method === 'post') {
+    const user = DEMO_USERS.find((u) => u.email === body.email) || DEFAULT_DEMO_USER;
+    return Promise.resolve(mockResponse(config, { user, ...issueMockTokens(user.id) }));
+  }
+  if (path === 'auth/refresh' && method === 'post') {
+    const viewerId = getViewerId(config);
+    return Promise.resolve(mockResponse(config, issueMockTokens(viewerId)));
+  }
+  if (path === 'auth/google/url' && method === 'get') {
+    return Promise.resolve(mockResponse(config, {
+      auth_url: '#/settings?gmail=connected&email=demo@aseesta.com&synced=0',
+    }));
+  }
   if (path === 'auth/me' && method === 'get') {
     const viewerId = getViewerId(config);
     return Promise.resolve(mockResponse(config, getDemoUserById(viewerId) || DEFAULT_DEMO_USER));
   }
 
-  console.warn(`[Mock API] Unhandled: ${method.toUpperCase()} ${path}`);
-  return Promise.resolve(mockResponse(config, {}));
+  if (path === 'health' && method === 'get') {
+    return Promise.resolve(mockResponse(config, { status: 'ok', mode: 'standalone' }));
+  }
+
+  console.warn(`[Local API] Sin handler: ${method.toUpperCase()} ${path}`);
+  return Promise.reject({
+    response: { status: 404, data: { detail: `Ruta no disponible en modo standalone: ${path}` } },
+  });
 }

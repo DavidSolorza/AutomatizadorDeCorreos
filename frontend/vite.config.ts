@@ -4,8 +4,12 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  const base = env.VITE_BASE_PATH || '/'
+  const env = loadEnv(mode, process.cwd(), 'VITE_')
+  // Producción: rutas relativas (./assets/...) — evita 404 en GitHub Pages
+  const base =
+    mode === 'development'
+      ? env.VITE_BASE_PATH || '/'
+      : env.VITE_BASE_PATH || './'
 
   return {
     base,
@@ -17,12 +21,6 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 5173,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:8000',
-          changeOrigin: true,
-        },
-      },
     },
   }
 })

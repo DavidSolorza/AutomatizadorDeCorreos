@@ -44,13 +44,13 @@ export function DashboardLayout() {
     <div className="min-h-screen bg-bg-primary overflow-x-hidden">
       <Sidebar />
       <Header />
-      {USE_MOCK && <DemoModeBanner />}
       <main
         className={cn(
           'transition-all duration-300 min-h-screen pt-16',
           sidebarOpen ? 'ml-64' : 'ml-16',
         )}
       >
+        {USE_MOCK && <DemoModeBanner />}
         <div className="p-6 lg:p-8 max-w-[100%] mx-auto">
           <Outlet />
         </div>

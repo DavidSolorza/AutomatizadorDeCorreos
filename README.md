@@ -70,16 +70,17 @@ pnpm dev
 
 ### GitHub Pages (automático)
 
-Al hacer push a `main`, el workflow `.github/workflows/deploy-demo.yml` publica en la rama `gh-pages`.
+Al hacer push a `main` o **`despliegue`**, el workflow `.github/workflows/deploy-demo.yml` publica la demo (sin rama `gh-pages`).
 
 1. En el repo → **Settings → Pages**
-2. Source: **Deploy from a branch**
-3. Branch: `gh-pages` / root
+2. Source: **GitHub Actions**
+3. Tras el deploy, la demo queda en: https://davidsolorza.github.io/AutomatizadorDeCorreos/
 
 Variables de build (ya en CI):
 
+- `VITE_STANDALONE=true` — API local en el navegador (sin backend)
 - `VITE_USE_MOCK=true`
-- `VITE_BASE_PATH=/AutomatizadorDeCorreos/`
+- `VITE_BASE_PATH=./` — assets relativos para GitHub Pages
 
 ### Vercel / Netlify (manual)
 

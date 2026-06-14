@@ -73,8 +73,9 @@ pnpm dev
 Al hacer push a `main` o **`despliegue`**, el workflow `.github/workflows/deploy-demo.yml` publica en la rama `gh-pages`.
 
 1. En el repo → **Settings → Pages**
-2. Source: **GitHub Actions** (no rama `gh-pages` manual)
-3. Tras el primer push a `main` o `despliegue`, el workflow publica automáticamente
+2. Source: **Deploy from a branch**
+3. Branch: **`gh-pages`** / **root**
+4. Guardar — en 1–2 min queda en: https://davidsolorza.github.io/AutomatizadorDeCorreos/
 
 Variables de build (ya en CI):
 

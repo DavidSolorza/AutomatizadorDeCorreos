@@ -8,4 +8,6 @@ export const gmailApi = {
     api.post(`/gmail/accounts/${accountId}/sync`, null, {
       params: { max_results: maxResults, label_ids: labelIds },
     }),
+  demoConnect: () => api.post('/gmail/demo/connect'),
+  demoSyncAll: () => api.post('/gmail/demo/sync-all'),
 };

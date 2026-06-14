@@ -3,6 +3,13 @@ import { mockStore } from './store';
 import { casesMockStore } from './cases-store';
 import { INSURANCE_RULES } from './cases-data';
 import { DEFAULT_DEMO_USER, DEMO_USERS, getDemoUserById, MOCK_USER } from '@/config';
+import {
+  processDemoMailboxSync,
+  processDemoFullSync,
+  connectAllDemoMailboxes,
+  simulateCustomEmail,
+  persistDemoState,
+} from './demo-engine';
 
 function getViewerId(config: InternalAxiosRequestConfig): string {
   const header = config.headers?.['X-Demo-User-Id'] as string | undefined;
@@ -207,17 +214,18 @@ export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<A
   if (path === 'gmail/auth/url' && method === 'get') {
     return Promise.resolve(mockResponse(config, { auth_url: '#' }));
   }
+  if (path === 'gmail/demo/connect' && method === 'post') {
+    const accounts = connectAllDemoMailboxes();
+    return Promise.resolve(mockResponse(config, { accounts, message: 'Buzones demo conectados' }));
+  }
+  if (path === 'gmail/demo/sync-all' && method === 'post') {
+    const synced = processDemoFullSync();
+    return Promise.resolve(mockResponse(config, { synced, message: `Demo: ${synced} correo(s) procesados en todos los buzones` }));
+  }
   if (path.match(/^gmail\/accounts\/([^/]+)\/sync$/) && method === 'post') {
-    if (mockStore.gmailAccounts.length > 0) {
-      mockStore.gmailAccounts[0].last_sync_at = new Date().toISOString();
-    }
-    const samples = [
-      { sender: 'comercial@nuevocliente.com', sender_name: 'Nuevo Cliente', subject: 'Cotización seguro empresarial urgente', body: 'Solicitamos cotización para cobertura empresarial integral.' },
-      { sender: 'gestion@cartera-interna.com', sender_name: 'Gestión Cartera', subject: 'Reporte cartera vencimientos próximos 15 días', body: 'Informe automático de cartera con pólizas próximas a vencer.' },
-      { sender: 'legal@entidad.gov.co', sender_name: 'Entidad Pública', subject: 'Licitación pública seguros patrimoniales 2026', body: 'Invitación a participar en proceso de licitación pública.' },
-    ];
-    for (const s of samples) casesMockStore.simulateIncomingEmail(s);
-    return Promise.resolve(mockResponse(config, { synced: samples.length, message: `Demo: ${samples.length} correos procesados como casos` }));
+    const accountId = path.split('/')[2];
+    const result = processDemoMailboxSync(accountId);
+    return Promise.resolve(mockResponse(config, { synced: result.synced, message: result.message }));
   }
 
   // Cases — rutas específicas ANTES de cases/:id
@@ -241,7 +249,7 @@ export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<A
     return Promise.resolve(mockResponse(config, casesMockStore.getAnalystStats(viewerId)));
   }
   if (path === 'cases/simulate' && method === 'post') {
-    const newCase = casesMockStore.simulateIncomingEmail(body);
+    const newCase = simulateCustomEmail(body);
     return Promise.resolve(mockResponse(config, newCase, 201));
   }
   if (path === 'cases' && method === 'get') {
@@ -259,6 +267,7 @@ export function handleMockRequest(config: InternalAxiosRequestConfig): Promise<A
     const viewerId = getViewerId(config);
     const updated = casesMockStore.updateCase(id, body, viewerId);
     if (!updated) return Promise.reject({ response: { status: 404 } });
+    persistDemoState();
     return Promise.resolve(mockResponse(config, updated));
   }
 

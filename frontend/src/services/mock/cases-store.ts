@@ -458,4 +458,10 @@ export class CasesMockStore {
   }
 }
 
+export function resetCasesMockSeed(): void {
+  casesMockStore.cases = seedWorkloadDemoCases(normalizeAssignments(clone(MOCK_CASES)));
+  casesMockStore.history = clone(MOCK_CASE_HISTORY);
+  casesMockStore.rules = clone(INSURANCE_RULES);
+}
+
 export const casesMockStore = new CasesMockStore();

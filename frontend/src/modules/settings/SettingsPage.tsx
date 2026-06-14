@@ -37,17 +37,42 @@ export function SettingsPage() {
     mutationFn: (accountId: string) => gmailApi.sync(accountId),
     onSuccess: (data) => {
       const synced = data?.data?.synced || 0;
-      toast('success', 'Sincronización completada', `${synced} correos procesados`);
+      toast('success', 'Sincronización completada', `${synced} correo(s) capturados y procesados como casos`);
       queryClient.invalidateQueries({ queryKey: ['cases'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['case-metrics'] });
     },
     onError: () => toast('error', 'Error al sincronizar'),
+  });
+
+  const syncAllMutation = useMutation({
+    mutationFn: () => gmailApi.demoSyncAll(),
+    onSuccess: (data) => {
+      const synced = data?.data?.synced || 0;
+      toast('success', 'Sync completo (demo)', `${synced} correo(s) desde Paula, Cristina y Marcela`);
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['case-metrics'] });
+    },
+    onError: () => toast('error', 'Error al sincronizar buzones'),
+  });
+
+  const demoConnectMutation = useMutation({
+    mutationFn: () => gmailApi.demoConnect(),
+    onSuccess: () => {
+      toast('success', 'Buzones conectados', 'Paula, Cristina y Marcela — captura demo activa');
+      queryClient.invalidateQueries({ queryKey: ['gmail-accounts'] });
+    },
+    onError: () => toast('error', 'Error al conectar buzones demo'),
   });
 
   const simulateMutation = useMutation({
     mutationFn: () => casesApi.simulate(simulateForm),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
-      toast('success', 'Correo simulado', 'Se creó un nuevo caso con resumen y tareas automáticas');
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['case-metrics'] });
+      toast('success', 'Correo simulado', 'Se creó un nuevo caso con resumen, tareas e historial automático');
     },
     onError: () => toast('error', 'Error al simular correo'),
   });
@@ -134,14 +159,61 @@ export function SettingsPage() {
           <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center">
             <Mail size={18} className="text-blue-600" />
           </div>
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Conexión Gmail (demo)</h2>
-            <p className="text-xs text-slate-500">Sincronización de correos para crear casos trazables</p>
+          <div className="flex-1">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+              {USE_MOCK ? 'Captura de correos (demo)' : 'Conexión Gmail'}
+            </h2>
+            <p className="text-xs text-slate-500">
+              {USE_MOCK
+                ? 'Simula Outlook/Gmail: captura → clasificación → asignación → caso con resumen IA'
+                : 'Sincronización de correos para crear casos trazables'}
+            </p>
           </div>
+          {USE_MOCK && connected.length > 0 && (
+            <Button
+              variant="secondary"
+              size="sm"
+              loading={syncAllMutation.isPending}
+              onClick={() => syncAllMutation.mutate()}
+            >
+              <RefreshCw size={14} /> Sync todos
+            </Button>
+          )}
         </div>
 
         {accountsLoading ? (
           <Skeleton className="h-16" />
+        ) : USE_MOCK && connected.length > 0 ? (
+          <div className="space-y-2">
+            {(accounts?.data || []).map((acc: { id: string; email: string; is_connected: boolean; last_sync_at: string | null }) => (
+              <div
+                key={acc.id}
+                className="flex items-center justify-between p-3 rounded-lg bg-emerald-50/80 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{acc.email}</p>
+                    <p className="text-xs text-slate-500">
+                      Conectado (demo)
+                      {acc.last_sync_at && ` · Última sync ${new Date(acc.last_sync_at).toLocaleString('es-CO', { hour: '2-digit', minute: '2-digit' })}`}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  loading={syncMutation.isPending}
+                  onClick={() => syncMutation.mutate(acc.id)}
+                >
+                  <RefreshCw size={14} /> Sincronizar
+                </Button>
+              </div>
+            ))}
+            <p className="text-[11px] text-slate-400 pt-1">
+              Cada sync captura 1–3 correos del pool demo, los clasifica por reglas y los asigna al analista correspondiente.
+            </p>
+          </div>
         ) : connected.length > 0 ? (
           <div className="flex items-center justify-between p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/40">
             <div className="flex items-center gap-3">
@@ -165,9 +237,19 @@ export function SettingsPage() {
         ) : (
           <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-3">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Conecta Gmail para que los correos entrantes se conviertan en casos con resumen y tareas automáticas.
+              {USE_MOCK
+                ? 'Conecta los buzones demo de Paula, Cristina y Marcela para simular la captura automática de correos.'
+                : 'Conecta Gmail para que los correos entrantes se conviertan en casos con resumen y tareas automáticas.'}
             </p>
-            {!USE_MOCK && (
+            {USE_MOCK ? (
+              <Button
+                onClick={() => demoConnectMutation.mutate()}
+                loading={demoConnectMutation.isPending}
+                className="shadow-md shadow-violet-600/20"
+              >
+                <Link2 size={14} /> Conectar buzones demo (3 analistas)
+              </Button>
+            ) : (
               <Button
                 onClick={() => connectMutation.mutate()}
                 loading={connectMutation.isPending}
@@ -175,11 +257,6 @@ export function SettingsPage() {
               >
                 <Link2 size={14} /> Conectar cuenta Gmail
               </Button>
-            )}
-            {USE_MOCK && (
-              <p className="text-xs text-slate-500">
-                Modo demo activo: usa la simulación de correos abajo, o cambia <code className="text-violet-600">VITE_USE_MOCK=false</code> para Gmail real.
-              </p>
             )}
           </div>
         )}

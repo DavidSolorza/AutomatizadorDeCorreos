@@ -1,0 +1,13 @@
+description: Testing standards — Vitest, component tests, service tests, edge cases
+globs: src/**/__tests__/**/*.test.{ts,tsx}
+
+## Testing Rules
+1. Vitest with @testing-library/react for components
+2. Test service layer (mock fetch/storage)
+3. Test store layer (Zustand)
+4. Test UI components (render, interaction, states)
+5. Each test file covers: happy path, edge cases, error states
+6. No test depends on another test (isolated)
+7. beforeEach clears state
+8. Mock external dependencies (Gemini API, fetch)
+9. Test file name matches source: [source].test.ts

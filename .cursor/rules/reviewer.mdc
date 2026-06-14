@@ -1,0 +1,14 @@
+description: Reviewer rules — code review checklist, rejection criteria
+globs: src/**/*.{ts,tsx}
+
+## Reviewer Checklist
+1. Architecture follows Vertical Slice rules
+2. No security vulnerabilities (XSS, injection, exposed keys)
+3. Performance: no unnecessary re-renders, lazy loading in place
+4. Clean code: no dead code, no console.log, no commented code
+5. Responsive: works at all breakpoints
+6. Dark mode: all new UI has dark: variants
+7. DRY: no code duplication
+8. Types: no `any`, proper interfaces
+9. Tests: new code has tests covering edge cases
+10. Build: `pnpm build` passes with zero errors

@@ -1,0 +1,15 @@
+description: UIUX standards — spacing, hierarchy, typography, colors, motion, layout
+globs: src/**/*.tsx
+
+## UIUX Rules
+1. Page title: text-2xl font-semibold
+2. Section title: text-lg font-semibold
+3. Body: text-sm
+4. Caption: text-xs text-neutral-500
+5. Spacing: Tailwind scale (4 = 16px base)
+6. Cards: rounded-xl, border, bg-white
+7. Colors: primary = blue, success = green, warning = amber, error = red
+8. No emojis — use initial-letter boxes or text badges
+9. Animations: Framer Motion, 0.2-0.3s, fade+slide-up pattern
+10. Dark mode: always support with dark: prefix
+11. Responsive: mobile-first, test at 375/768/1024/1440

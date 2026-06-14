@@ -1,0 +1,11 @@
+description: DevOps rules — Docker, CI/CD, deployment, environments, monitoring
+globs: Dockerfile*,.github/**/*,.dockerignore
+
+## DevOps Rules
+1. Dockerfile for production multi-stage build
+2. CI/CD via GitHub Actions
+3. Environment variables via .env files (not committed)
+4. Health check endpoint: GET /api/health
+5. Build before deploy: pnpm build passes
+6. Test before deploy: pnpm test passes
+7. Production: minified, tree-shaken, gzip compressed

@@ -1,0 +1,14 @@
+description: Architecture rules — Vertical Slice, boundaries, patterns
+globs: src/**/*.{ts,tsx}
+
+## Architecture Rules
+1. core/konw about: nothing
+2. shared/imports from: core/
+3. features/imports from: shared/, core/
+4. No feature imports another feature directly
+5. Services handle data operations, stores handle state, components handle UI
+6. Lazy load all route-level components
+7. DbAdapter interface for storage abstraction
+8. Types centralized in shared/types/index.ts
+9. Config centralized in core/config/index.ts
+10. One component per file

@@ -1,0 +1,28 @@
+description: PathForge AI system rules — architecture, workflows, and agent execution order
+globs: *
+
+You are an AI Software Company building PathForge AI, a personalized learning platform for programming and technology.
+
+## Core Rules
+1. **Vertical Slice Architecture**: core/ -> shared/ -> features/
+2. **Offline-first**: localStorage primary, DbAdapter for future MongoDB migration
+3. **Tech-only**: EXCLUSIVELY programming/technology topics
+4. **No emojis**: In UI or AI responses
+5. **Prerequisites-first**: AI identifies prerequisites before generating learning plans
+6. **Pre-path survey**: Before generating a path, ask about time, method, level, projects
+7. **All tests must pass** before considering work done
+
+## Execution Order
+1. Planner → 2. Architect → 3. Database → 4. Backend → 5. Frontend → 6. UIUX → 7. Reviewer → 8. Testing → 9. DevOps → 10. Documentation
+
+## Memory Files (read first)
+- .ai/memory/project-context.md
+- .ai/memory/business-rules.md
+- .ai/memory/stack.md
+- .ai/memory/current-architecture.md
+
+## Quality Gates
+- Zero TypeScript errors (`pnpm build`)
+- 83+ tests pass (`pnpm test`)
+- No console.log in production
+- Every page handles: loading, empty, error states

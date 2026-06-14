@@ -1,0 +1,13 @@
+description: Database rules — Mongoose schemas, indexing, relationships, optimization
+globs: server/src/models/**/*.ts
+
+## Database Rules
+1. Schemas match shared/types/ exactly
+2. Embedded documents for one-to-few (stages → topics → resources)
+3. References for one-to-many (user → paths)
+4. Timestamps: true on all models
+5. Index: userId on all user-scoped collections
+6. Validate enums at schema level
+7. .lean() for read-only queries
+8. Limit results on high-volume collections (activity: 20)
+9. Unique index on user email

@@ -1,0 +1,13 @@
+description: Backend coding standards — Express, MongoDB, JWT auth, error handling
+globs: server/**/*.ts
+
+## Backend Rules
+1. RESTful conventions: GET, POST, PUT, DELETE
+2. JWT auth middleware on all protected routes
+3. Input validation before processing
+4. Error format: { error: string }, never expose internals
+5. Log errors server-side with context
+6. Password hashing with bcryptjs (10 rounds)
+7. Passwords never returned in responses
+8. CORS with specific origin
+9. Route handlers are thin; logic belongs in services (future)

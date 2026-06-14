@@ -1,0 +1,15 @@
+description: Frontend coding standards — React, TypeScript, TailwindCSS, components
+globs: src/**/*.tsx
+
+## Frontend Rules
+1. TypeScript strict mode, no `any`
+2. TailwindCSS v4 for all styling
+3. Every page: loading skeleton, empty state, error state, success state
+4. Framer Motion for animations (fade + slide up pattern)
+5. Lucide React for icons
+6. No emojis in any UI text
+7. Zustand selectors for minimum re-renders
+8. useCallback for stable callbacks, useRef for mutable values
+9. Components: PascalCase, one per file, typed props interface
+10. Event handlers: handle{EventName}
+11. Imports order: external → internal, absolute → relative

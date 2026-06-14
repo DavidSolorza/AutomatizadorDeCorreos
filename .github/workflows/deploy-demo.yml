@@ -22,9 +22,13 @@ jobs:
         with:
           node-version: '22'
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Install dependencies
         working-directory: frontend
-        run: npm install --no-audit --no-fund
+        run: pnpm install --frozen-lockfile
 
       - name: Build demo (mock + GitHub Pages base path)
         working-directory: frontend
@@ -32,7 +36,7 @@ jobs:
           VITE_USE_MOCK: 'true'
           VITE_BASE_PATH: /AutomatizadorDeCorreos/
           NODE_OPTIONS: '--max-old-space-size=4096'
-        run: npm run build
+        run: pnpm run build
 
       - name: Verify build output
         working-directory: frontend

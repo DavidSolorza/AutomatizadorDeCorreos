@@ -1,7 +1,12 @@
 import type { CaseCategory } from '@/types/cases';
 import type { DemoUser } from '@/types/cases';
 
-export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false';
+/** App 100% frontend — sin backend (rama despliegue / GitHub Pages). */
+export const STANDALONE =
+  import.meta.env.VITE_STANDALONE === 'true' || import.meta.env.VITE_USE_MOCK !== 'false';
+
+/** Cuando STANDALONE, axios nunca llama al servidor. */
+export const USE_MOCK = STANDALONE;
 
 /** Base URL de Vite (assets). Coincide con vite.config `base`. */
 export const BASE_PATH = import.meta.env.BASE_URL || '/';

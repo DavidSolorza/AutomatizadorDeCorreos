@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { gmailApi, casesApi } from '@/services/api';
 import { useDemoUserStore, useUIStore } from '@/store';
-import { USE_MOCK, APP_NAME, ANALYST_MAILBOXES, PLATFORM_MISSION } from '@/config';
+import { STANDALONE, APP_NAME, ANALYST_MAILBOXES, PLATFORM_MISSION } from '@/config';
 import { toast } from '@/components/ui/Toast';
 import { RulesEditor } from '@/components/rules/RulesEditor';
 import { cn } from '@/lib/utils';
@@ -144,7 +144,7 @@ export function SettingsPage() {
                 <p className="text-xs text-slate-500">{box.email}</p>
               </div>
               <span className="text-[10px] font-medium px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
-                {USE_MOCK ? 'Demo conectado' : 'Pendiente OAuth'}
+                {STANDALONE ? 'Conectado' : 'Pendiente OAuth'}
               </span>
             </div>
           ))}
@@ -161,15 +161,15 @@ export function SettingsPage() {
           </div>
           <div className="flex-1">
             <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
-              {USE_MOCK ? 'Captura de correos (demo)' : 'Conexión Gmail'}
+              {STANDALONE ? 'Captura de correos' : 'Conexión Gmail'}
             </h2>
             <p className="text-xs text-slate-500">
-              {USE_MOCK
-                ? 'Simula Outlook/Gmail: captura → clasificación → asignación → caso con resumen IA'
+              {STANDALONE
+                ? 'Captura → clasificación → asignación → caso con resumen automático'
                 : 'Sincronización de correos para crear casos trazables'}
             </p>
           </div>
-          {USE_MOCK && connected.length > 0 && (
+          {STANDALONE && connected.length > 0 && (
             <Button
               variant="secondary"
               size="sm"
@@ -183,7 +183,7 @@ export function SettingsPage() {
 
         {accountsLoading ? (
           <Skeleton className="h-16" />
-        ) : USE_MOCK && connected.length > 0 ? (
+        ) : STANDALONE && connected.length > 0 ? (
           <div className="space-y-2">
             {(accounts?.data || []).map((acc: { id: string; email: string; is_connected: boolean; last_sync_at: string | null }) => (
               <div
@@ -195,7 +195,7 @@ export function SettingsPage() {
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{acc.email}</p>
                     <p className="text-xs text-slate-500">
-                      Conectado (demo)
+                      Conectado
                       {acc.last_sync_at && ` · Última sync ${new Date(acc.last_sync_at).toLocaleString('es-CO', { hour: '2-digit', minute: '2-digit' })}`}
                     </p>
                   </div>
@@ -237,11 +237,11 @@ export function SettingsPage() {
         ) : (
           <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-3">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              {USE_MOCK
-                ? 'Conecta los buzones demo de Paula, Cristina y Marcela para simular la captura automática de correos.'
+              {STANDALONE
+                ? 'Conecta los buzones de Paula, Cristina y Marcela para simular la captura automática.'
                 : 'Conecta Gmail para que los correos entrantes se conviertan en casos con resumen y tareas automáticas.'}
             </p>
-            {USE_MOCK ? (
+            {STANDALONE ? (
               <Button
                 onClick={() => demoConnectMutation.mutate()}
                 loading={demoConnectMutation.isPending}

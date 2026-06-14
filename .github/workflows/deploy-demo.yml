@@ -2,7 +2,7 @@ name: Deploy Demo (GitHub Pages)
 
 on:
   push:
-    branches: [main]
+    branches: [main, despliegue]
   workflow_dispatch:
 
 permissions:
@@ -33,6 +33,7 @@ jobs:
       - name: Build demo (mock + GitHub Pages base path)
         working-directory: frontend
         env:
+          VITE_STANDALONE: 'true'
           VITE_USE_MOCK: 'true'
           VITE_BASE_PATH: /AutomatizadorDeCorreos/
           NODE_OPTIONS: '--max-old-space-size=4096'

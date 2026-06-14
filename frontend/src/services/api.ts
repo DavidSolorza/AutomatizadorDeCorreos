@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { USE_MOCK } from '@/config';
-import { handleMockRequest } from './mock/handler';
+import { handleLocalRequest } from './local-api';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: '/api/v1',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
   }
 
   if (USE_MOCK) {
-    config.adapter = () => handleMockRequest(config);
+    config.adapter = () => handleLocalRequest(config);
     return config;
   }
 
@@ -28,6 +28,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if (USE_MOCK) return Promise.reject(error);
+
     if (error.response?.status === 401) {
       const refresh = localStorage.getItem('refresh_token');
       if (refresh && error.config.url !== '/auth/refresh') {
